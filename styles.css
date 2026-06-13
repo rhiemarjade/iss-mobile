@@ -756,3 +756,262 @@ th {
         padding: 0.65rem;
     }
 }
+
+/* Grade encoding mobile polish v2 */
+.grade-card-list {
+    display: none;
+}
+
+.grade-header .button-cluster button {
+    min-height: 2.75rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+    body {
+        background: #f3f6fb;
+    }
+
+    .main-panel {
+        padding: 0.65rem;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    }
+
+    .topbar {
+        gap: 0.65rem;
+        margin-bottom: 0.65rem;
+        padding: 0.7rem;
+        border-radius: 18px;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+    }
+
+    .topbar h1 {
+        font-size: 1rem;
+        line-height: 1.15;
+    }
+
+    .topbar p {
+        display: none;
+    }
+
+    .menu-btn {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+    }
+
+    .connection-pill {
+        grid-column: auto;
+        justify-self: end;
+        padding: 0.38rem 0.55rem;
+        font-size: 0.72rem;
+    }
+
+    .panel-card.grade-card {
+        padding: 0.75rem;
+        border-radius: 18px;
+    }
+
+    .grade-header {
+        gap: 0.6rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .grade-header h2 {
+        font-size: 1.12rem;
+        line-height: 1.2;
+    }
+
+    .grade-header .muted {
+        margin-top: 0.28rem;
+        font-size: 0.84rem;
+        line-height: 1.35;
+    }
+
+    .grade-header .button-cluster {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.38rem;
+        width: 100%;
+    }
+
+    .grade-header .button-cluster button {
+        min-width: 0;
+        min-height: 2.55rem;
+        padding: 0.58rem 0.25rem;
+        border-radius: 13px;
+        font-size: 0.76rem;
+        line-height: 1.1;
+    }
+
+    .grade-header .button-cluster #saveGradesBtn {
+        background: var(--accent);
+    }
+
+    .toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .search-box {
+        min-width: 0;
+        gap: 0.3rem;
+        font-size: 0.86rem;
+    }
+
+    .search-box input {
+        padding: 0.65rem 0.8rem;
+        border-radius: 12px;
+    }
+
+    .check-row {
+        display: flex;
+        padding: 0.62rem 0.72rem;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #f8fafc;
+        font-size: 0.82rem;
+    }
+
+    .check-row input {
+        width: 1.15rem;
+        height: 1.15rem;
+    }
+
+    .change-count {
+        width: 100%;
+        margin-left: 0;
+        padding: 0.5rem 0.65rem;
+        text-align: center;
+        font-size: 0.84rem;
+    }
+
+    .grade-table-scroll {
+        display: none;
+    }
+
+    .grade-card-list {
+        display: grid;
+        gap: 0.72rem;
+    }
+
+    .student-grade-card {
+        padding: 0.78rem;
+        border: 1px solid var(--line);
+        border-radius: 17px;
+        background: #ffffff;
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+
+    .student-card-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.65rem;
+        align-items: start;
+        margin-bottom: 0.65rem;
+    }
+
+    .student-name {
+        display: block;
+        font-size: 0.95rem;
+        line-height: 1.2;
+    }
+
+    .student-lrn {
+        display: block;
+        margin-top: 0.25rem;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .gender-pill {
+        border-radius: 999px;
+        padding: 0.25rem 0.5rem;
+        color: #334155;
+        background: #f1f5f9;
+        font-size: 0.73rem;
+        font-weight: 900;
+    }
+
+    .mobile-period-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.48rem;
+    }
+
+    .mobile-period-field {
+        display: grid;
+        gap: 0.34rem;
+        padding: 0.55rem;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.75rem;
+        font-weight: 900;
+    }
+
+    .mobile-period-field.active-period {
+        border-color: #0f172a;
+        background: #eef2f7;
+    }
+
+    .mobile-period-field .grade-input-wrap {
+        gap: 0.28rem;
+    }
+
+    .mobile-period-field .grade-input {
+        width: 100%;
+        min-width: 0;
+        padding: 0.52rem 0.25rem;
+        border-radius: 12px;
+        font-size: 0.94rem;
+        font-weight: 900;
+    }
+
+    .mobile-period-field .correction-dot {
+        width: 2rem;
+        height: 2rem;
+        flex: 0 0 2rem;
+        font-size: 0.78rem;
+    }
+
+    .student-result-row {
+        display: grid;
+        grid-template-columns: 0.75fr 1.25fr;
+        gap: 0.5rem;
+        margin-top: 0.65rem;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 800;
+    }
+
+    .student-result-row span {
+        padding: 0.48rem 0.55rem;
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+    .student-result-row strong {
+        color: var(--text);
+    }
+}
+
+@media (max-width: 390px) {
+    .grade-header .button-cluster {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mobile-period-grid {
+        gap: 0.42rem;
+    }
+
+    .mobile-period-field {
+        padding: 0.48rem;
+    }
+}

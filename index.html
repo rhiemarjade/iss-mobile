@@ -7,7 +7,7 @@
     <title>ISS Mobile Grade Encoding</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="assets/iss_logo.png">
-    <link rel="stylesheet" href="styles.css?v=1">
+    <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
     <section id="loginView" class="login-view">
@@ -110,7 +110,7 @@
                         </div>
                         <div class="button-cluster">
                             <button id="backToLoadsBtn" class="secondary" type="button">Back</button>
-                            <button id="downloadCurrentLoadCsvBtn" class="secondary" type="button">Download Current Load CSV</button>
+                            <button id="downloadCurrentLoadCsvBtn" class="secondary" type="button" title="Download current load CSV">CSV</button>
                             <button id="refreshGradesBtn" class="secondary" type="button">Refresh</button>
                             <button id="saveGradesBtn" type="button">Save Changes</button>
                         </div>
@@ -126,7 +126,7 @@
                         <span id="changeCountText" class="change-count">No pending changes</span>
                     </div>
                     <p id="gradeMessage" class="message"></p>
-                    <div class="table-scroll">
+                    <div class="table-scroll grade-table-scroll">
                         <table class="grade-table">
                             <thead>
                                 <tr>
@@ -144,6 +144,7 @@
                             <tbody id="gradeTableBody"></tbody>
                         </table>
                     </div>
+                    <div id="gradeCardList" class="grade-card-list"></div>
                 </div>
             </section>
 
@@ -242,7 +243,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=1"></script>
-    <script src="app.js?v=1"></script>
+    <script src="config.js?v=2"></script>
+    <script src="app.js?v=2"></script>
 </body>
 </html>

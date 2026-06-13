@@ -54,6 +54,7 @@
         gradeTitle: $("gradeTitle"),
         gradeSubtitle: $("gradeSubtitle"),
         gradeTableBody: $("gradeTableBody"),
+        gradeCardList: $("gradeCardList"),
         gradeMessage: $("gradeMessage"),
         studentSearchInput: $("studentSearchInput"),
         missingOnlyInput: $("missingOnlyInput"),
@@ -651,8 +652,92 @@
         });
     }
 
+    function isCompactGradeView() {
+        return window.matchMedia("(max-width: 720px)").matches;
+    }
+
+    function gradeInputHtml(row, quarter, activeQuarter) {
+        const value = gradeValue(row, quarter);
+        const textValue = gradeValueAsText(value);
+        const visible = row[`q${quarter}_visible`] !== false;
+        const periodOwner = row[`q${quarter}_can_encode`] !== false;
+        const editable = visible && periodOwner && canEditQuarter(row, quarter, activeQuarter);
+
+        if (!visible) return `<span class="masked-grade">**</span>`;
+
+        const requestButton = canRequestGradeCorrection(row, quarter, editable, textValue)
+            ? `<button class="correction-dot" type="button" data-request-grade-id="${escapeHtml(row.grade_id)}" data-request-quarter="${quarter}" title="Request correction">✎</button>`
+            : "";
+
+        return `
+            <div class="grade-input-wrap">
+                <input class="grade-input ${editable ? "" : "locked"}" type="number" inputmode="numeric" min="60" max="100" step="1" value="${escapeHtml(textValue)}" data-grade-id="${escapeHtml(row.grade_id)}" data-quarter="${quarter}" data-original="${escapeHtml(textValue)}" ${editable ? "" : "disabled"}>
+                ${requestButton}
+            </div>`;
+    }
+
+    function renderGradeCards(rows, periods, activeQuarter) {
+        if (!els.gradeCardList) return;
+        els.gradeCardList.innerHTML = "";
+
+        const gradingSystem = gradingSystemForLoad(state.selectedLoad);
+
+        rows.forEach((row) => {
+            const allDisplayedVisible = periods.every((quarter) => row[`q${quarter}_visible`] !== false);
+            const finalVisible = row.final_visible !== undefined ? row.final_visible !== false : allDisplayedVisible;
+            const remarksVisible = row.remarks_visible !== undefined ? row.remarks_visible !== false : finalVisible;
+            const article = document.createElement("article");
+            article.className = "student-grade-card";
+
+            const periodFields = periods.map((quarter) => `
+                <label class="mobile-period-field ${quarter === activeQuarter ? "active-period" : ""}">
+                    <span>${escapeHtml(periodLabel(quarter, gradingSystem))}</span>
+                    ${gradeInputHtml(row, quarter, activeQuarter)}
+                </label>`).join("");
+
+            article.innerHTML = `
+                <div class="student-card-head">
+                    <div>
+                        <strong class="student-name">${escapeHtml(fullName(row))}</strong>
+                        <span class="student-lrn">LRN ${escapeHtml(row.lrn || "")}</span>
+                    </div>
+                    <span class="gender-pill">${escapeHtml(row.gender || "")}</span>
+                </div>
+                <div class="mobile-period-grid">${periodFields}</div>
+                <div class="student-result-row">
+                    <span>Final <strong>${finalVisible ? escapeHtml(row.final_average ?? "") : '<span class="masked-grade">**</span>'}</strong></span>
+                    <span>Remarks <strong>${remarksVisible ? escapeHtml(row.remarks ?? "") : '<span class="masked-grade">**</span>'}</strong></span>
+                </div>`;
+
+            els.gradeCardList.appendChild(article);
+        });
+    }
+
+    function renderGradeTableRows(rows, periods, activeQuarter) {
+        rows.forEach((row) => {
+            const tr = document.createElement("tr");
+            const quarterCells = periods.map((quarter) => `<td>${gradeInputHtml(row, quarter, activeQuarter)}</td>`).join("");
+            const allDisplayedVisible = periods.every((quarter) => row[`q${quarter}_visible`] !== false);
+            const finalVisible = row.final_visible !== undefined ? row.final_visible !== false : allDisplayedVisible;
+            const remarksVisible = row.remarks_visible !== undefined ? row.remarks_visible !== false : finalVisible;
+            const q4HiddenCell = periods.length === 3 ? `<td class="hidden"></td>` : "";
+
+            tr.innerHTML = `
+                <td>${escapeHtml(row.lrn || "")}</td>
+                <td>${escapeHtml(fullName(row))}</td>
+                <td>${escapeHtml(row.gender || "")}</td>
+                ${quarterCells}
+                ${q4HiddenCell}
+                <td>${finalVisible ? escapeHtml(row.final_average ?? "") : '<span class="masked-grade">**</span>'}</td>
+                <td>${remarksVisible ? escapeHtml(row.remarks ?? "") : '<span class="masked-grade">**</span>'}</td>
+            `;
+            els.gradeTableBody.appendChild(tr);
+        });
+    }
+
     function renderGradeTable() {
         els.gradeTableBody.innerHTML = "";
+        if (els.gradeCardList) els.gradeCardList.innerHTML = "";
 
         if (!state.selectedLoad) {
             els.gradeMessage.textContent = "Select a load first.";
@@ -679,46 +764,11 @@
         const activeQuarter = displayActiveQuarterForLoad(state.selectedLoad.active_quarter, state.selectedLoad);
         const periods = displayPeriodsForLoad(state.selectedLoad);
 
-        rows.forEach((row) => {
-            const tr = document.createElement("tr");
-            const quarterCells = periods.map((quarter) => {
-                const value = gradeValue(row, quarter);
-                const textValue = gradeValueAsText(value);
-                const visible = row[`q${quarter}_visible`] !== false;
-                const periodOwner = row[`q${quarter}_can_encode`] !== false;
-                const editable = visible && periodOwner && canEditQuarter(row, quarter, activeQuarter);
-
-                if (!visible) return `<td><span class="masked-grade">**</span></td>`;
-
-                const requestButton = canRequestGradeCorrection(row, quarter, editable, textValue)
-                    ? `<button class="correction-dot" type="button" data-request-grade-id="${escapeHtml(row.grade_id)}" data-request-quarter="${quarter}" title="Request correction">✎</button>`
-                    : "";
-
-                return `
-                    <td>
-                        <div class="grade-input-wrap">
-                            <input class="grade-input ${editable ? "" : "locked"}" type="number" min="60" max="100" step="1" value="${escapeHtml(textValue)}" data-grade-id="${escapeHtml(row.grade_id)}" data-quarter="${quarter}" data-original="${escapeHtml(textValue)}" ${editable ? "" : "disabled"}>
-                            ${requestButton}
-                        </div>
-                    </td>`;
-            }).join("");
-
-            const allDisplayedVisible = periods.every((quarter) => row[`q${quarter}_visible`] !== false);
-            const finalVisible = row.final_visible !== undefined ? row.final_visible !== false : allDisplayedVisible;
-            const remarksVisible = row.remarks_visible !== undefined ? row.remarks_visible !== false : finalVisible;
-            const q4HiddenCell = periods.length === 3 ? `<td class="hidden"></td>` : "";
-
-            tr.innerHTML = `
-                <td>${escapeHtml(row.lrn || "")}</td>
-                <td>${escapeHtml(fullName(row))}</td>
-                <td>${escapeHtml(row.gender || "")}</td>
-                ${quarterCells}
-                ${q4HiddenCell}
-                <td>${finalVisible ? escapeHtml(row.final_average ?? "") : '<span class="masked-grade">**</span>'}</td>
-                <td>${remarksVisible ? escapeHtml(row.remarks ?? "") : '<span class="masked-grade">**</span>'}</td>
-            `;
-            els.gradeTableBody.appendChild(tr);
-        });
+        if (isCompactGradeView()) {
+            renderGradeCards(rows, periods, activeQuarter);
+        } else {
+            renderGradeTableRows(rows, periods, activeQuarter);
+        }
 
         updateChangeCount();
     }
@@ -1440,13 +1490,27 @@
         els.saveGradesBtn.addEventListener("click", saveGrades);
         els.studentSearchInput.addEventListener("input", renderGradeTable);
         els.missingOnlyInput.addEventListener("change", renderGradeTable);
-        els.gradeTableBody.addEventListener("input", (event) => {
-            if (event.target.classList.contains("grade-input")) updateChangeCount();
-        });
-        els.gradeTableBody.addEventListener("click", (event) => {
-            const button = event.target.closest("[data-request-grade-id]");
-            if (!button) return;
-            openGradeCorrectionRequestModal(button.dataset.requestGradeId, Number(button.dataset.requestQuarter || 0));
+        const bindGradeContainerEvents = (container) => {
+            if (!container) return;
+            container.addEventListener("input", (event) => {
+                if (event.target.classList.contains("grade-input")) updateChangeCount();
+            });
+            container.addEventListener("click", (event) => {
+                const button = event.target.closest("[data-request-grade-id]");
+                if (!button) return;
+                openGradeCorrectionRequestModal(button.dataset.requestGradeId, Number(button.dataset.requestQuarter || 0));
+            });
+        };
+
+        bindGradeContainerEvents(els.gradeTableBody);
+        bindGradeContainerEvents(els.gradeCardList);
+
+        let lastCompactGradeView = isCompactGradeView();
+        window.addEventListener("resize", () => {
+            const compactNow = isCompactGradeView();
+            if (compactNow === lastCompactGradeView || !state.selectedLoad) return;
+            lastCompactGradeView = compactNow;
+            renderGradeTable();
         });
 
         els.closeRequestCorrectionBtn.addEventListener("click", hideGradeCorrectionRequestModal);
