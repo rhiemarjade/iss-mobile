@@ -671,7 +671,7 @@
 
         return `
             <div class="grade-input-wrap">
-                <input class="grade-input ${editable ? "" : "locked"}" type="number" inputmode="numeric" min="60" max="100" step="1" value="${escapeHtml(textValue)}" data-grade-id="${escapeHtml(row.grade_id)}" data-quarter="${quarter}" data-original="${escapeHtml(textValue)}" ${editable ? "" : "disabled"}>
+                <input class="grade-input ${editable ? "" : "locked"}" type="text" inputmode="numeric" pattern="[0-9]*" value="${escapeHtml(textValue)}" data-grade-id="${escapeHtml(row.grade_id)}" data-quarter="${quarter}" data-original="${escapeHtml(textValue)}" ${editable ? "" : "disabled"}>
                 ${requestButton}
             </div>`;
     }
@@ -1122,7 +1122,7 @@
         els.requestStudentText.textContent = fullName(row);
         els.requestSubjectText.textContent = row.subject_name || state.selectedLoad?.subject_name || "Subject not set";
         els.requestPeriodText.textContent = `${periodLabel(quarter, gradingSystemForLoad(state.selectedLoad))} | Current Grade: ${gradeValueAsText(currentValue)}`;
-        els.requestCorrectionSubtitle.textContent = `${row.lrn || "No LRN"} | Grade ${row.grade_level || ""} ${row.section_name || ""}`.trim();
+        els.requestCorrectionSubtitle.textContent = `Grade ${row.grade_level || ""} ${row.section_name || ""}`.trim();
         els.requestCorrectionMessage.textContent = "Enter the corrected grade and reason.";
         els.requestCorrectionModal.classList.remove("hidden");
         setTimeout(() => els.requestedGradeInput.focus(), 0);

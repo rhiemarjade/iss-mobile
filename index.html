@@ -7,7 +7,7 @@
     <title>ISS Mobile Grade Encoding</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="assets/iss_logo.png">
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
     <section id="loginView" class="login-view">
@@ -190,20 +190,34 @@
     </section>
 
     <div id="requestCorrectionModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="requestCorrectionTitle">
-        <div class="modal-card">
+        <div class="modal-card correction-request-modal">
             <div class="modal-header">
                 <div>
                     <h2 id="requestCorrectionTitle">Request Grade Correction</h2>
-                    <p id="requestCorrectionSubtitle" class="muted"></p>
                 </div>
                 <button id="closeRequestCorrectionBtn" class="icon-btn" type="button">×</button>
             </div>
             <div class="modal-body">
-                <p><strong id="requestStudentText"></strong></p>
-                <p id="requestSubjectText" class="muted"></p>
-                <p id="requestPeriodText" class="muted"></p>
+                <div class="correction-form-summary">
+                    <div>
+                        <span>Name of the Student</span>
+                        <strong id="requestStudentText"></strong>
+                    </div>
+                    <div>
+                        <span>Grade and Section</span>
+                        <strong id="requestCorrectionSubtitle"></strong>
+                    </div>
+                    <div>
+                        <span>Subject</span>
+                        <strong id="requestSubjectText"></strong>
+                    </div>
+                    <div>
+                        <span>Term | Current Grade</span>
+                        <strong id="requestPeriodText"></strong>
+                    </div>
+                </div>
                 <label>Corrected grade
-                    <input id="requestedGradeInput" type="number" min="60" max="100" step="1">
+                    <input id="requestedGradeInput" type="text" inputmode="numeric" pattern="[0-9]*">
                 </label>
                 <label>Reason
                     <textarea id="requestReasonInput" rows="4" placeholder="Explain why this grade needs correction"></textarea>
@@ -243,7 +257,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=2"></script>
-    <script src="app.js?v=2"></script>
+    <script src="config.js?v=3"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>
