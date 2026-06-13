@@ -7,7 +7,7 @@
     <title>ISS Mobile Grade Encoding</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="assets/iss_logo.png">
-    <link rel="stylesheet" href="styles.css?v=4">
+    <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
     <section id="loginView" class="login-view">
@@ -110,9 +110,9 @@
                         </div>
                         <div class="button-cluster">
                             <button id="backToLoadsBtn" class="secondary" type="button">Back</button>
-                            <button id="downloadCurrentLoadCsvBtn" class="secondary" type="button" title="Download current load CSV">CSV</button>
+                            <button id="downloadCurrentLoadCsvBtn" class="secondary" type="button">Download Current Load CSV</button>
                             <button id="refreshGradesBtn" class="secondary" type="button">Refresh</button>
-                            <button id="saveGradesBtn" class="hidden" type="button">Save Changes</button>
+                            <button id="saveGradesBtn" type="button">Save Changes</button>
                         </div>
                     </div>
                     <div class="toolbar">
@@ -126,7 +126,7 @@
                         <span id="changeCountText" class="change-count">No pending changes</span>
                     </div>
                     <p id="gradeMessage" class="message"></p>
-                    <div class="table-scroll grade-table-scroll">
+                    <div class="table-scroll">
                         <table class="grade-table">
                             <thead>
                                 <tr>
@@ -144,7 +144,6 @@
                             <tbody id="gradeTableBody"></tbody>
                         </table>
                     </div>
-                    <div id="gradeCardList" class="grade-card-list"></div>
                 </div>
             </section>
 
@@ -189,60 +188,21 @@
         </main>
     </section>
 
-    <div id="studentGradeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="studentGradeTitle">
-        <div class="modal-card student-grade-modal-card">
-            <div class="modal-header">
-                <div>
-                    <h2 id="studentGradeTitle">Encode Student Grade</h2>
-                    <p id="studentGradeSubtitle" class="muted"></p>
-                </div>
-                <button id="closeStudentGradeBtn" class="icon-btn" type="button">×</button>
-            </div>
-            <div class="modal-body student-grade-modal-body">
-                <div class="student-grade-summary">
-                    <div><span>Name of the Student</span><strong id="studentGradeNameText"></strong></div>
-                    <div><span>Grade and Section</span><strong id="studentGradeSectionText"></strong></div>
-                    <div><span>Subject</span><strong id="studentGradeSubjectText"></strong></div>
-                </div>
-                <div id="studentGradeFields" class="student-grade-fields"></div>
-                <p id="studentGradeModalMessage" class="message"></p>
-            </div>
-            <div class="modal-actions">
-                <button id="cancelStudentGradeBtn" class="secondary" type="button">Cancel</button>
-                <button id="saveStudentGradeBtn" type="button">Save Student Grade</button>
-            </div>
-        </div>
-    </div>
-
     <div id="requestCorrectionModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="requestCorrectionTitle">
-        <div class="modal-card correction-request-modal">
+        <div class="modal-card">
             <div class="modal-header">
                 <div>
                     <h2 id="requestCorrectionTitle">Request Grade Correction</h2>
+                    <p id="requestCorrectionSubtitle" class="muted"></p>
                 </div>
                 <button id="closeRequestCorrectionBtn" class="icon-btn" type="button">×</button>
             </div>
             <div class="modal-body">
-                <div class="correction-form-summary">
-                    <div>
-                        <span>Name of the Student</span>
-                        <strong id="requestStudentText"></strong>
-                    </div>
-                    <div>
-                        <span>Grade and Section</span>
-                        <strong id="requestCorrectionSubtitle"></strong>
-                    </div>
-                    <div>
-                        <span>Subject</span>
-                        <strong id="requestSubjectText"></strong>
-                    </div>
-                    <div>
-                        <span>Term | Current Grade</span>
-                        <strong id="requestPeriodText"></strong>
-                    </div>
-                </div>
+                <p><strong id="requestStudentText"></strong></p>
+                <p id="requestSubjectText" class="muted"></p>
+                <p id="requestPeriodText" class="muted"></p>
                 <label>Corrected grade
-                    <input id="requestedGradeInput" type="text" inputmode="numeric" pattern="[0-9]*">
+                    <input id="requestedGradeInput" type="number" min="60" max="100" step="1">
                 </label>
                 <label>Reason
                     <textarea id="requestReasonInput" rows="4" placeholder="Explain why this grade needs correction"></textarea>
@@ -282,7 +242,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=4"></script>
-    <script src="app.js?v=4"></script>
+    <script src="config.js?v=5"></script>
+    <script src="app.js?v=5"></script>
 </body>
 </html>
