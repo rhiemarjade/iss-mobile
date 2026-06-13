@@ -1441,3 +1441,228 @@ tbody tr:hover {
         font-size: 14px;
     }
 }
+
+/* Per-student save mode v4 */
+.grade-table-scroll {
+    display: none !important;
+}
+
+#saveGradesBtn.hidden {
+    display: none !important;
+}
+
+.grade-card-list {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+}
+
+.student-picker-card {
+    display: grid;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.student-picker-card:hover,
+.student-picker-card:focus {
+    background: #f5f8ff;
+    border-color: var(--primary);
+    outline: none;
+}
+
+.student-picker-card.needs-grade {
+    border-left: 4px solid var(--gold);
+}
+
+.student-period-chips {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.student-period-chip {
+    display: grid;
+    gap: 2px;
+    min-height: 44px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #f8fafc;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.student-period-chip b {
+    color: #24324a;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+}
+
+.student-period-chip.active {
+    border-color: var(--primary);
+    background: #edf2fb;
+}
+
+.student-period-chip.editable {
+    background: #fffdf2;
+    border-color: #efd36a;
+}
+
+.student-period-chip.missing {
+    color: #92400e;
+}
+
+.student-period-chip.masked {
+    color: #64748b;
+}
+
+.student-card-action {
+    margin-top: 2px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.student-grade-modal-card {
+    width: min(100%, 560px);
+}
+
+.student-grade-modal-body {
+    gap: 12px;
+}
+
+.student-grade-summary {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #f8fafc;
+}
+
+.student-grade-summary div {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 12px;
+}
+
+.student-grade-summary span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.student-grade-summary strong {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+.student-grade-fields {
+    display: grid;
+    gap: 8px;
+}
+
+.student-grade-field {
+    display: grid;
+    gap: 6px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #ffffff;
+}
+
+.student-grade-field.active-field {
+    border-color: var(--primary);
+    background: #f7f9ff;
+}
+
+.student-grade-field.editable-field {
+    grid-template-columns: 95px minmax(0, 1fr);
+    align-items: center;
+}
+
+.student-grade-field.editable-field span,
+.student-grade-field-main span {
+    color: #24324a;
+    font-weight: 700;
+}
+
+.student-grade-field.editable-field em {
+    grid-column: 1 / -1;
+}
+
+.student-grade-edit-input {
+    width: 100%;
+    max-width: 160px;
+    padding: 8px 10px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.student-grade-edit-input.changed {
+    border-color: var(--gold);
+    background: #fff8df;
+}
+
+.student-grade-field-main {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+}
+
+.student-grade-field em {
+    color: var(--muted);
+    font-size: 12px;
+    font-style: normal;
+}
+
+.small-request-btn {
+    justify-self: start;
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+@media (max-width: 720px) {
+    .grade-card-list {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .student-grade-card {
+        padding: 10px;
+    }
+
+    .student-period-chips {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .student-card-action {
+        text-align: left;
+    }
+
+    .student-grade-summary div {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+
+    .student-grade-field.editable-field {
+        grid-template-columns: 80px minmax(0, 1fr);
+    }
+
+    .student-grade-edit-input {
+        max-width: none;
+    }
+}
+
+@media (max-width: 380px) {
+    .student-period-chips {
+        grid-template-columns: 1fr;
+    }
+}
