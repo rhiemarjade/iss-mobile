@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <title>ISS Mobile Grade Encoding</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/iss_logo.png">
+    <link rel="stylesheet" href="styles.css?v=1">
+</head>
+<body>
+    <section id="loginView" class="login-view">
+        <div class="login-card">
+            <div class="brand-row login-brand">
+                <img src="assets/iss_logo.png" alt="ISS logo">
+                <div>
+                    <h1>ISS Mobile</h1>
+                    <p>Grade Encoding Portal</p>
+                </div>
+            </div>
+            <form id="loginForm" class="login-form">
+                <label for="emailInput">DepEd Email</label>
+                <input id="emailInput" type="email" autocomplete="username" required>
+                <label for="passwordInput">Password</label>
+                <input id="passwordInput" type="password" autocomplete="current-password" required>
+                <button id="loginBtn" type="submit">Log in</button>
+                <p id="loginMessage" class="message"></p>
+            </form>
+        </div>
+    </section>
+
+    <section id="appShell" class="app-shell hidden">
+        <div id="drawerOverlay" class="drawer-overlay hidden"></div>
+        <aside id="sidebar" class="sidebar">
+            <div class="brand-row sidebar-brand">
+                <img src="assets/iss_logo.png" alt="ISS logo">
+                <div>
+                    <h2>ISS Mobile</h2>
+                    <p id="userRoleText">Teacher</p>
+                </div>
+            </div>
+            <nav class="side-nav" aria-label="Main navigation">
+                <button class="nav-item active" type="button" data-page="dashboard"><span>🏠</span> Dashboard</button>
+                <button class="nav-item" type="button" data-page="loads"><span>📘</span> My Loads</button>
+                <button class="nav-item" type="button" data-page="corrections"><span>✎</span> Grade Correction <span id="correctionBadge" class="nav-badge hidden">0</span></button>
+            </nav>
+            <button id="logoutBtn" class="logout-btn" type="button">Logout</button>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <button id="menuBtn" class="menu-btn" type="button" aria-label="Open navigation">☰</button>
+                <div>
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle">Mobile grade encoding companion</p>
+                </div>
+                <div id="connectionStatus" class="connection-pill">Checking</div>
+            </header>
+
+            <section id="dashboardPage" class="page-section">
+                <div class="hero-card">
+                    <div>
+                        <p class="eyebrow">Signed in as</p>
+                        <h2 id="dashboardName">Teacher</h2>
+                        <p id="dashboardEmail" class="muted"></p>
+                    </div>
+                    <button id="dashboardRefreshBtn" class="secondary" type="button">Refresh</button>
+                </div>
+                <div class="stats-grid">
+                    <article class="stat-card"><span>School Year</span><strong id="statSchoolYear">Not set</strong></article>
+                    <article class="stat-card"><span>Active Period</span><strong id="statPeriod">Not set</strong></article>
+                    <article class="stat-card"><span>My Loads</span><strong id="statLoads">0</strong></article>
+                    <article class="stat-card"><span>Pending Corrections</span><strong id="statCorrections">0</strong></article>
+                </div>
+                <div class="panel-card">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Recent Loads</h2>
+                            <p id="dashboardMessage" class="message">Loading dashboard...</p>
+                        </div>
+                        <button class="secondary" type="button" data-nav-target="loads">Open My Loads</button>
+                    </div>
+                    <div id="dashboardLoads" class="compact-load-list"></div>
+                </div>
+            </section>
+
+            <section id="loadsPage" class="page-section hidden">
+                <div class="panel-card">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Assigned Loads</h2>
+                            <p id="loadsMessage" class="message">Select a load to encode grades.</p>
+                        </div>
+                        <div class="button-cluster">
+                            <button id="downloadMyLoadsCsvBtn" class="secondary" type="button">Download CSV</button>
+                            <button id="loadsRefreshBtn" class="secondary" type="button">Refresh</button>
+                        </div>
+                    </div>
+                    <div id="loadsGrid" class="loads-grid"></div>
+                </div>
+            </section>
+
+            <section id="gradePage" class="page-section hidden">
+                <div class="panel-card grade-card">
+                    <div class="grade-header">
+                        <div>
+                            <h2 id="gradeTitle">Grade Encoding</h2>
+                            <p id="gradeSubtitle" class="muted"></p>
+                        </div>
+                        <div class="button-cluster">
+                            <button id="backToLoadsBtn" class="secondary" type="button">Back</button>
+                            <button id="downloadCurrentLoadCsvBtn" class="secondary" type="button">Download Current Load CSV</button>
+                            <button id="refreshGradesBtn" class="secondary" type="button">Refresh</button>
+                            <button id="saveGradesBtn" type="button">Save Changes</button>
+                        </div>
+                    </div>
+                    <div class="toolbar">
+                        <label class="search-box">Search
+                            <input id="studentSearchInput" type="search" placeholder="Name or LRN">
+                        </label>
+                        <label class="check-row">
+                            <input id="missingOnlyInput" type="checkbox">
+                            Show missing active-period grades only
+                        </label>
+                        <span id="changeCountText" class="change-count">No pending changes</span>
+                    </div>
+                    <p id="gradeMessage" class="message"></p>
+                    <div class="table-scroll">
+                        <table class="grade-table">
+                            <thead>
+                                <tr>
+                                    <th>LRN</th>
+                                    <th>Complete Name</th>
+                                    <th>Gender</th>
+                                    <th data-period-header="1">Q1</th>
+                                    <th data-period-header="2">Q2</th>
+                                    <th data-period-header="3">Q3</th>
+                                    <th data-period-header="4">Q4</th>
+                                    <th>Final</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gradeTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="correctionsPage" class="page-section hidden">
+                <div class="panel-card">
+                    <div class="section-heading">
+                        <div>
+                            <h2>Grade Correction</h2>
+                            <p id="correctionMessage" class="message">Track submitted grade correction requests.</p>
+                        </div>
+                        <button id="correctionsRefreshBtn" class="secondary" type="button">Refresh</button>
+                    </div>
+                    <div class="stats-grid correction-stats">
+                        <article class="stat-card"><span>Pending</span><strong id="pendingCountText">0</strong></article>
+                        <article class="stat-card"><span>Approved</span><strong id="approvedCountText">0</strong></article>
+                        <article class="stat-card"><span>Rejected</span><strong id="rejectedCountText">0</strong></article>
+                        <article class="stat-card"><span>Cancelled</span><strong id="cancelledCountText">0</strong></article>
+                    </div>
+                    <div class="toolbar correction-toolbar">
+                        <label>Status
+                            <select id="correctionStatusFilter">
+                                <option value="">All</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Rejected">Rejected</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </label>
+                        <label>Period
+                            <select id="correctionPeriodFilter">
+                                <option value="">All</option>
+                                <option value="1">Q1</option>
+                                <option value="2">Q2</option>
+                                <option value="3">Q3</option>
+                                <option value="4">Q4</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div id="correctionList" class="correction-list"></div>
+                </div>
+            </section>
+        </main>
+    </section>
+
+    <div id="requestCorrectionModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="requestCorrectionTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h2 id="requestCorrectionTitle">Request Grade Correction</h2>
+                    <p id="requestCorrectionSubtitle" class="muted"></p>
+                </div>
+                <button id="closeRequestCorrectionBtn" class="icon-btn" type="button">×</button>
+            </div>
+            <div class="modal-body">
+                <p><strong id="requestStudentText"></strong></p>
+                <p id="requestSubjectText" class="muted"></p>
+                <p id="requestPeriodText" class="muted"></p>
+                <label>Corrected grade
+                    <input id="requestedGradeInput" type="number" min="60" max="100" step="1">
+                </label>
+                <label>Reason
+                    <textarea id="requestReasonInput" rows="4" placeholder="Explain why this grade needs correction"></textarea>
+                </label>
+                <p id="requestCorrectionMessage" class="message"></p>
+            </div>
+            <div class="modal-actions">
+                <button id="cancelRequestCorrectionBtn" class="secondary" type="button">Cancel</button>
+                <button id="submitRequestCorrectionBtn" type="button">Submit Request</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="reviewCorrectionModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="reviewCorrectionTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h2 id="reviewCorrectionTitle">Review Grade Correction</h2>
+                    <p id="reviewCorrectionSubtitle" class="muted"></p>
+                </div>
+                <button id="closeReviewCorrectionBtn" class="icon-btn" type="button">×</button>
+            </div>
+            <div class="modal-body">
+                <p><strong id="reviewStudentText"></strong></p>
+                <p id="reviewSubjectText" class="muted"></p>
+                <p id="reviewChangeText" class="muted"></p>
+                <label>Notes
+                    <textarea id="reviewNotesInput" rows="4" placeholder="Optional notes"></textarea>
+                </label>
+                <p id="reviewCorrectionMessage" class="message"></p>
+            </div>
+            <div class="modal-actions">
+                <button id="cancelReviewCorrectionBtn" class="secondary" type="button">Cancel</button>
+                <button id="confirmReviewCorrectionBtn" type="button">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js?v=1"></script>
+    <script src="app.js?v=1"></script>
+</body>
+</html>
