@@ -7,7 +7,7 @@
     <title>ISS Grade Encoding</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="assets/iss_logo.png">
-    <link rel="stylesheet" href="styles.css?v=6">
+    <link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
     <section id="loginView" class="login-view">
@@ -108,22 +108,17 @@
                             <h2 id="gradeTitle">Grade Encoding</h2>
                             <p id="gradeSubtitle" class="muted"></p>
                         </div>
-                        <div class="button-cluster">
+                        <div class="button-cluster grade-actions">
                             <button id="backToLoadsBtn" class="secondary" type="button">Back</button>
-                            <button id="downloadCurrentLoadCsvBtn" class="secondary" type="button" title="Download current load CSV">CSV</button>
+                            <button id="downloadCurrentLoadCsvBtn" class="secondary hidden" type="button" title="Download current load CSV">CSV</button>
                             <button id="refreshGradesBtn" class="secondary" type="button">Refresh</button>
                             <button id="saveGradesBtn" class="hidden" type="button">Save Changes</button>
                         </div>
                     </div>
-                    <div class="toolbar">
-                        <label class="search-box">Search
-                            <input id="studentSearchInput" type="search" placeholder="Name or LRN">
-                        </label>
-                        <label class="check-row">
-                            <input id="missingOnlyInput" type="checkbox">
-                            Show missing active-period grades only
-                        </label>
-                        <span id="changeCountText" class="change-count">No pending changes</span>
+                    <div class="grade-hidden-controls hidden" aria-hidden="true">
+                        <input id="studentSearchInput" type="search" value="">
+                        <input id="missingOnlyInput" type="checkbox">
+                        <span id="changeCountText">No pending changes</span>
                     </div>
                     <p id="gradeMessage" class="message"></p>
                     <div class="table-scroll grade-table-scroll">
@@ -282,7 +277,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=6"></script>
-    <script src="app.js?v=6"></script>
+    <script src="config.js?v=7"></script>
+    <script src="app.js?v=7"></script>
 </body>
 </html>
