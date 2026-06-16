@@ -129,6 +129,27 @@
         }
     };
 
+    function getViewMode() {
+        const width = window.innerWidth || document.documentElement.clientWidth || 0;
+        const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+        if (width >= 1024 && finePointer) return "desktop";
+        if (width >= 720) return "tablet";
+        return "mobile";
+    }
+
+    function applyViewMode() {
+        const mode = getViewMode();
+        const previous = document.body.dataset.viewMode || "";
+        document.body.dataset.viewMode = mode;
+        document.body.classList.toggle("desktop-mode", mode === "desktop");
+        document.body.classList.toggle("touch-mode", mode !== "desktop");
+        return previous !== mode;
+    }
+
+    function isDesktopGradeView() {
+        return (document.body.dataset.viewMode || getViewMode()) === "desktop";
+    }
+
     function escapeHtml(value) {
         return String(value ?? "")
             .replace(/&/g, "&amp;")
@@ -665,7 +686,7 @@
     }
 
     function isCompactGradeView() {
-        return window.matchMedia("(max-width: 720px)").matches;
+        return !isDesktopGradeView();
     }
 
     function gradeInputHtml(row, quarter, activeQuarter) {
@@ -744,9 +765,23 @@
     }
 
     function renderGradeTableRows(rows, periods, activeQuarter) {
-        // The mobile companion now uses per-student cards for all screen sizes.
-        // Keeping this function name avoids touching older call sites, but it renders cards intentionally.
-        renderGradeCards(rows, periods, activeQuarter);
+        if (!els.gradeTableBody) return;
+        els.gradeTableBody.innerHTML = "";
+        const allPeriods = displayPeriodsForLoad(state.selectedLoad);
+        rows.forEach((row) => {
+            const allDisplayedVisible = allPeriods.every((quarter) => row[`q${quarter}_visible`] !== false);
+            const finalVisible = row.final_visible !== undefined ? row.final_visible !== false : allDisplayedVisible;
+            const remarksVisible = row.remarks_visible !== undefined ? row.remarks_visible !== false : finalVisible;
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${escapeHtml(row.lrn || "")}</td>
+                <td>${escapeHtml(fullName(row))}</td>
+                <td>${escapeHtml(row.gender || "")}</td>
+                ${periods.map((quarter) => `<td>${gradeInputHtml(row, quarter, activeQuarter)}</td>`).join("")}
+                <td>${finalVisible ? escapeHtml(row.final_average ?? "") : '<span class="masked-grade">**</span>'}</td>
+                <td>${remarksVisible ? escapeHtml(row.remarks ?? "") : '<span class="masked-grade">**</span>'}</td>`;
+            els.gradeTableBody.appendChild(tr);
+        });
     }
 
     function renderGradeTable() {
@@ -765,19 +800,28 @@
             return;
         }
 
+        const desktopGradeView = isDesktopGradeView();
+        els.saveGradesBtn.classList.toggle("hidden", !desktopGradeView);
+
         if (!isConnectionAvailable()) {
             els.gradeMessage.textContent = connectionUnavailableNotice();
         } else if (isSystemLocked()) {
             els.gradeMessage.textContent = systemLockedNotice();
         } else if (!isGradeEncodingOpen()) {
             els.gradeMessage.textContent = gradeEncodingClosedNotice();
+        } else if (desktopGradeView) {
+            els.gradeMessage.textContent = "Encode grades in the table, then click Save Changes.";
         } else {
-            els.gradeMessage.textContent = "Open a learner card, enter the grade, then save. Each learner is saved separately.";
+            els.gradeMessage.textContent = "Tap a learner, enter the grade, then save.";
         }
 
         const activeQuarter = displayActiveQuarterForLoad(state.selectedLoad.active_quarter, state.selectedLoad);
         const periods = displayPeriodsForLoad(state.selectedLoad);
-        renderGradeCards(rows, periods, activeQuarter);
+        if (desktopGradeView) {
+            renderGradeTableRows(rows, periods, activeQuarter);
+        } else {
+            renderGradeCards(rows, periods, activeQuarter);
+        }
         updateChangeCount();
     }
 
@@ -786,18 +830,40 @@
         const gradeOpen = isGradeEncodingOpen();
         const systemLocked = isSystemLocked();
         const connectionAvailable = isConnectionAvailable();
+        const desktopGradeView = isDesktopGradeView();
+        els.saveGradesBtn.classList.toggle("hidden", !desktopGradeView);
 
         if (!connectionAvailable) {
             els.changeCountText.textContent = "Connection unavailable";
-        } else if (systemLocked) {
+            els.saveGradesBtn.disabled = true;
+            return;
+        }
+        if (systemLocked) {
             els.changeCountText.textContent = "System is locked";
-        } else if (!gradeOpen) {
+            els.saveGradesBtn.disabled = true;
+            return;
+        }
+        if (!gradeOpen) {
             els.changeCountText.textContent = "Grade encoding is closed";
-        } else {
-            els.changeCountText.textContent = "Per-student save mode";
+            els.saveGradesBtn.disabled = true;
+            return;
         }
 
-        els.saveGradesBtn.disabled = true;
+        if (!desktopGradeView) {
+            els.changeCountText.textContent = "Saved per learner";
+            els.saveGradesBtn.disabled = true;
+            return;
+        }
+
+        let count = 0;
+        document.querySelectorAll(".grade-input:not(:disabled)").forEach((input) => {
+            const changed = input.value.trim() !== input.dataset.original && input.value.trim() !== "";
+            input.classList.toggle("changed", changed);
+            if (changed) count += 1;
+        });
+
+        els.changeCountText.textContent = count ? `${count} pending change(s)` : "No pending changes";
+        els.saveGradesBtn.disabled = count === 0;
     }
 
     function studentModalInputHtml(row, quarter, activeQuarter, gradingSystem) {
@@ -1704,10 +1770,12 @@
 
         let lastCompactGradeView = isCompactGradeView();
         window.addEventListener("resize", () => {
+            const modeChanged = applyViewMode();
             const compactNow = isCompactGradeView();
-            if (compactNow === lastCompactGradeView || !state.selectedLoad) return;
+            if (!modeChanged && compactNow === lastCompactGradeView) return;
             lastCompactGradeView = compactNow;
-            renderGradeTable();
+            if (state.selectedLoad) renderGradeTable();
+            closeDrawer();
         });
 
         els.studentGradeFields.addEventListener("input", (event) => {
@@ -1735,6 +1803,7 @@
         els.correctionPeriodFilter.addEventListener("change", renderCorrectionList);
     }
 
+    applyViewMode();
     bindEvents();
     checkSession();
 })();
